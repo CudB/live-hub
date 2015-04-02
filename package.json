@@ -1,0 +1,10 @@
+{
+  "name": "Group14Prototype",
+  "version": "0.0.1",
+  "private": "true",
+  "dependencies": {
+    "express": "*",
+    "firebase": "^2.2.3",
+    "jade": "*"
+  }
+}
