@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "private": "true",
   "dependencies": {
-    "express": "*",
+    "express": "3.*.*",
     "firebase": "^2.2.3",
     "jade": "*",
     "serve-static": "*",
