@@ -6,6 +6,7 @@
     "express": "*",
     "firebase": "^2.2.3",
     "jade": "*",
-    "serve-static": "*"
+    "serve-static": "*",
+    "logger": "*"
   }
 }
