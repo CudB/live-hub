@@ -170,6 +170,9 @@ header {
 .sidebar .outputwidget .outputbox {
   font-size: 13px;
   padding: 2px;
+  height: 95%;
+  overflow-y: scroll;
+  margin: 5px;
 }
 .sidebar .inputwidget {
   -webkit-border-radius: 3px;

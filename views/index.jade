@@ -6,6 +6,7 @@ block content
 block sidebar
   .outputwidget
     .outputbox
+      ul(id = "messages")
   .inputwidget
     .inputbox
       input.formcontrol(type = "text", id= "nameInput", placeholder = "Name", maxlength = 20)
@@ -13,21 +14,42 @@ block sidebar
 
 block scripts
   script(src='https://cdn.firebase.com/js/client/2.2.1/firebase.js')
-  script(src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js')
+  script(src='https://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js')
   script.
-    var myDataRef = new Firebase('https://flickering-inferno-2389.firebaseio.com/');
-    $('#messageInput').keypress(function (e) {
+    var messagesRef = new Firebase('https://flickering-inferno-2389.firebaseio.com/');
+
+    var messageField = $('#messageInput');
+    var nameField = $('#nameInput');
+    var messageList = $('#messages');
+
+    messageField.keypress(function (e) {
       if (e.keyCode == 13) {
-        var name = $('#nameInput').val();
-        var text = $('#messageInput').val();
-        myDataRef.push({name: name, text: text});
-        $('#messageInput').val('');
+        //FIELD VALUES
+        var username = nameField.val();
+        var message = messageField.val();
+
+        //SAVE DATA TO FIREBASE AND EMPTY FIELD
+        messagesRef.push({name:username, text:message});
+        messageField.val('');
       }
     });
-    myDataRef.on('child_added', function(snapshot) {
-      var message = snapshot.val();
-      displayChatMessage(message.name, message.text);
+
+    // Add a callback that is triggered for each chat message.
+    messagesRef.limitToLast(10).on('child_added', function (snapshot) {
+      //GET DATA
+      var data = snapshot.val();
+      var username = data.name || "anonymous";
+      var message = data.text;
+
+      //CREATE ELEMENTS MESSAGE & SANITIZE TEXT
+      var messageElement = $("<li>");
+      var nameElement = $("<strong class='example-chat-username'></strong>")
+      nameElement.text(username);
+      messageElement.text(message).prepend(nameElement.append(": "));
+
+      //ADD MESSAGE
+      messageList.append(messageElement)
+
+      //SCROLL TO BOTTOM OF MESSAGE LIST
+      messageList.scrollTop(messageList[0].scrollHeight);
     });
-    function displayChatMessage(name, text) {
-      $('<div class="messagebox"/>').text(text).prepend($('<em/>').text(name+': ')).appendTo($('.outputbox'));
-    };
