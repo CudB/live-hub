@@ -4,17 +4,16 @@ block content
   //- iframe(src="https://www-cdn.jtvnw.net/swflibs/TwitchPlayer.rd6a0d073735dbb05d88bcf4fd798b5e148f4e8f9.swf?channel=riotgame", frameborder="0", scrolling="no", height="378", width="620")
   iframe(width="560", height="315", src="https://www.youtube.com/embed/videoseries?list=PLFgquLnL59alZ5m7XEk44TI-FTrfNwL2B", frameborder="0", allowfullscreen)
   div(align="center")
-    button(class="btn", data-action="like", style="color: #0F0").
-        Dope
-    button(class="btn", data-action="dislike", style="color: #F00").
-        Shit
+    button(id="dopeBtn", class="btn", data-action="dope", style="color: #41dc38") DOPE
+    div(class="divider")
+    button(id="shitBtn", class="btn", data-action="shit", style="color: #f52929") SHIT
 block sidebar
   .outputwidget
     .outputbox
       ul(id = "messages")
   .inputwidget
     .inputbox
-      input.formcontrol(type = "text", id= "nameInput", placeholder = "Name", maxlength = 20)
+      //input.formcontrol(type = "text", id= "nameInput", placeholder = "Name", maxlength = 20)
       input.formcontrol(type = "text", id= "messageInput" placeholder = "Message", maxlength = 50)
 
 block scripts
@@ -25,17 +24,17 @@ block scripts
     var messagesRef = new Firebase('https://blazing-torch-9003.firebaseio.com/');
 
     var messageField = $('#messageInput');
-    var nameField = $('#nameInput');
+    //var nameField = $('#nameInput');
     var messageList = $('#messages');
 
     messageField.keypress(function (e) {
       if (e.keyCode == 13) {
         //FIELD VALUES
-        var username = nameField.val();
+        //var username = nameField.val();
         var message = messageField.val();
 
         //SAVE DATA TO FIREBASE AND EMPTY FIELD
-        messagesRef.push({name:username, text:message});
+        messagesRef.push({text:message});
         messageField.val('');
       }
     });
@@ -58,4 +57,21 @@ block scripts
 
       //SCROLL TO BOTTOM OF MESSAGE LIST
       messageList.scrollTop(messageList[0].scrollHeight);
+    });
+    
+    var dopeBtn = $('#dopeBtn');
+    var shitBtn = $('#shitBtn');
+    
+    dopeBtn.click(function() {
+        $(this).prop('disabled', true);
+        $(this).attr('class', 'btnSelected');
+        shitBtn.prop('disabled', false);
+        shitBtn.attr('class', 'btn');
+    });
+    
+    shitBtn.click(function() {
+        $(this).prop('disabled', true);
+        $(this).attr('class', 'btnSelected');
+        dopeBtn.prop('disabled', false);
+        dopeBtn.attr('class', 'btn');
     });
