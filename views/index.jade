@@ -52,16 +52,12 @@ block scripts
     }
 
     fb.child('startVideos').on('value', function(snapshot) {
-      if(snapshot.val() == 1) {
-        player.playVideo();
-      }
+      player.playVideo();
       resetButtons();
     });
 
     fb.child('pauseVideo').on('value', function(snapshot) {
-      if(snapshot.val() == 1) {
-        player.pauseVideo();
-      }
+      player.pauseVideo();
       resetButtons();
     });
 
