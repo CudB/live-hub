@@ -4,16 +4,13 @@ block content
   .adminPageHeader
     h1 Admin Buttons
   .div
-    button.adminButtons(id="startVideosBtn") Start Videos
+    button.adminButtons(id="startVideosBtn") Start Playback
   .div
-    button.adminButtons(id="pauseVideoBtn") Pause Video
+    button.adminButtons(id="pauseVideoBtn") Pause Playback
   .div
     button.adminButtons(id="skipVideoBtn") Skip Video
   .div
-    button.adminButtons(id="resetVideosBtn") Reset Videos
-
-  .div
-    button.adminButtons(id="resetSkipVotesBtn") Reset Votes
+    button.adminButtons(id="resetVideosBtn") Reset Prototype
   .div
     button.adminButtons(id="resetMessagesBtn") Reset Messages
 
@@ -25,7 +22,6 @@ block scripts
 
     var resetMessages = $('#resetMessagesBtn');
     var resetVideos = $('#resetVideosBtn');
-    var resetVotes = $('#resetSkipVotesBtn');
     var startVideos = $('#startVideosBtn');
     var skipVideo = $('#skipVideoBtn');
     var pauseVideo = $('#pauseVideoBtn');
@@ -82,11 +78,4 @@ block scripts
 
     resetMessages.click(function() {
       fb.child('messages').remove(); 
-    });
-
-    resetVotes.click(function() {
-      fb.update({
-        likeCounter: 0,
-        skipCounter: 0
-      });
     });
