@@ -47,18 +47,23 @@ block scripts
         playerVars: {
           listType: 'playlist',
           list: 'PLg3fCa_sYT3ivyH1DZPUsLWABsDJVhmDd',
+          loop: 1
         },
       });
     }
 
     fb.child('startVideos').on('value', function(snapshot) {
-      player.playVideo();
-      resetButtons();
+      if(snapshot.val()) {
+        player.playVideo();
+        resetButtons();
+      }
     });
 
     fb.child('pauseVideo').on('value', function(snapshot) {
-      player.pauseVideo();
-      resetButtons();
+      if(snapshot.val()) {
+        player.pauseVideo();
+        resetButtons();
+      }
     });
 
     fb.child('resetVideos').on('value', function(snapshot) {
@@ -103,24 +108,36 @@ block scripts
     })
     
     likeBtn.click(function() {
-      if(skipSelected) {
-        decSkip();
-      }
-      likeSelected = 1;
-      incLike();
       resetButtons();
-      $(this).prop('disabled', true);
-      $(this).attr('class', 'btnSelected');
+      if(!likeSelected) {
+        likeSelected = 1;
+        incLike();
+        $(this).attr('class', 'btnSelected');
+        if(skipSelected) {
+          skipSelected = 0;
+          decSkip();
+        }
+      }
+      else {
+        likeSelected = 0;
+        decLike();
+      }
     });
     
     skipBtn.click(function() {
       resetButtons();
-      $(this).prop('disabled', true);
-      $(this).attr('class', 'btnSelected');
-      skipSelected = 1;
-      incSkip();
-      if(likeSelected) {
-        decLike();
+      if(!skipSelected) {
+        $(this).attr('class', 'btnSelected');
+        skipSelected = 1;
+        incSkip();
+        if(likeSelected) {
+          likeSelected = 0;
+          decLike();
+        }
+      }
+      else {
+        skipSelected = 0;
+        decSkip();
       }
     });
 
@@ -129,7 +146,6 @@ block scripts
       likeBtn.attr('class', 'likeBtn');
       skipBtn.prop('disabled', false);
       skipBtn.attr('class', 'skipBtn');
-      skipSelected = 0;
     }
 
     function incSkip() {
