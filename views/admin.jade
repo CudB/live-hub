@@ -14,7 +14,7 @@ block content
     button.adminButtons(id="resetVideosBtn") Reset Videos
 
   .div
-    button.adminButtons(id="resetSkipVotesBtn") Reset Skip Votes
+    button.adminButtons(id="resetSkipVotesBtn") Reset Votes
   .div
     button.adminButtons(id="resetMessagesBtn") Reset Messages
 
@@ -60,6 +60,7 @@ block scripts
 
     resetVideos.click(function() {
       fb.child('skipCounter').remove();
+      fb.child('likeCounter').remove();
       fb.set({
         resetVideos: 1
       });
@@ -85,6 +86,9 @@ block scripts
       fb.child('messages').remove(); 
     });
 
-    resetSkipVotes.click(function() {
-      fb.child('skipCounter').remove(); 
+    resetVotes.click(function() {
+      fb.set({
+        likeCounter: 0,
+        skipCounter: 0
+      });
     });

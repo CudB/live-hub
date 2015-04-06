@@ -4,14 +4,15 @@ block content
   .videocontainer
     div(id="player") 
     .votebuttons
-      button(id="likeBtn", class="likeBtn") LIKE
-      button(id="skipBtn", class="skipBtn") VOTE TO SKIP
+      button(id="likeBtn", class="likeBtn") YAE
+      button(id="skipBtn", class="skipBtn") NAE
     .skipCounter
+    .likeCounter
 
 block sidebar
   .outputwidget
     .outputbox
-      ul(id = "messages")
+      ul(id = "example-messages")
   .inputwidget  
     .inputbox
       input.formcontrol(type = "text", id= "nameInput", placeholder = "Nickname", maxlength = 20)
@@ -29,6 +30,7 @@ block scripts
     var skipBtn = $('#skipBtn');
     var numSkipVotesRequired = 3;
 
+    var likeSelected = 0;
     var skipSelected = 0;
     var skipCounterOld = 0;
     var dontplay = 0;
@@ -45,19 +47,19 @@ block scripts
         playerVars: {
           listType: 'playlist',
           list: 'PLFgquLnL59alZ5m7XEk44TI-FTrfNwL2B',
-          //- controls: 0,
-          //- showinfo: 0
         },
       });
     }
 
     fb.child('startVideos').on('value', function(snapshot) {
+      resetButtons();
       if(snapshot.val() == 1) {
         player.playVideo();
       }
     });
 
     fb.child('pauseVideo').on('value', function(snapshot) {
+      resetButtons();
       if(snapshot.val() == 1) {
         player.pauseVideo();
       }
@@ -67,7 +69,7 @@ block scripts
       if(snapshot.val() == 1) {
         resetButtons();
         player.playVideoAt(0);
-        player.pauseVideo();
+        resetLikesAndSkips();
       }
     });
 
@@ -75,6 +77,7 @@ block scripts
       if(snapshot.val() == 1) {
         resetButtons();
         player.nextVideo();
+        resetLikesAndSkips();
       }
     });
 
@@ -101,11 +104,17 @@ block scripts
       }
       updateSkipCountRequired(snapshot.val());
     });
+
+    fb.child('likeCounter').on('value', function(snapshot) {
+      updateLikeCounter(snapshot.val());
+    })
     
     likeBtn.click(function() {
       if(skipSelected) {
         decSkip();
       }
+      likeSelected = 1;
+      incLike();
       resetButtons();
       $(this).prop('disabled', true);
       $(this).attr('class', 'btnSelected');
@@ -117,6 +126,9 @@ block scripts
       $(this).attr('class', 'btnSelected');
       skipSelected = 1;
       incSkip();
+      if(likeSelected) {
+        decLike();
+      }
     });
 
     function resetButtons() {
@@ -141,19 +153,56 @@ block scripts
       });
     }
 
+    function incLike() {
+      // increment the counter
+      fb.child('likeCounter').transaction(function(currentValue) {
+          return (currentValue||0) + 1
+      });
+    }
+
+    function decLike() {
+      // increment the counter
+      fb.child('likeCounter').transaction(function(currentValue) {
+          return (currentValue||0) - 1
+      });
+    }
+
     function updateSkipCountRequired(ss) {
       if(ss != numSkipVotesRequired) {
         var counter = numSkipVotesRequired - ss;
-        $('.skipCounter').text(counter||0).append(" votes required to skip");
+        $('.skipCounter').text(counter||0).append(" more votes required to skip");
       }
     }
+
+    function updateLikeCounter(ss) {
+      if(ss == 0) {
+        $('.likeCounter').text("No users are jamming out");
+      }
+      else if(ss == 1) {
+        $('.likeCounter').text(ss||0).append(" user is jamming out");
+      }
+      else if(ss > 1) {
+        $('.likeCounter').text(ss||0).append(" users are jamming out");
+      }
+    }
+
+    function resetLikesAndSkips() {
+      likeSelected = 0;
+      skipSelected = 0;
+      fb.set({
+        skipCounter: 0,
+        likeCounter: 0
+      });
+    }
+
+
 
   script.
     var fb = new Firebase('https://flickering-inferno-2389.firebaseio.com/');
 
     var messageField = $('#messageInput');
     var nameField = $('#nameInput');
-    var messageList = $('#messages');
+    var messageList = $('#example-messages');
 
     messageField.keypress(function (e) {
       if (e.keyCode == 13) {
@@ -184,7 +233,7 @@ block scripts
       messageList.append(messageElement)
 
       //SCROLL TO BOTTOM OF MESSAGE LIST
-      messageList.scrollTop(messageList[0].scrollHeight);
+      messageList[0].scrollTop = messageList[0].scrollHeight;
     });
     
     

@@ -237,6 +237,13 @@ footer {
   padding: 10px 20px 10px 20px;
 }
 
+.likeCounter {
+  float: right;
+  font-family: Quicksand;
+  font-size: 20px;
+  padding: 10px 20px 10px 20px;
+}
+
 .btnSelected {
   background: #30a5ff;
   border-radius: 10px;
