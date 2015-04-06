@@ -69,7 +69,6 @@ block scripts
       if(snapshot.val() == 1) {
         resetButtons();
         player.playVideoAt(0);
-        resetLikesAndSkips();
       }
     });
 
@@ -77,12 +76,10 @@ block scripts
       if(snapshot.val() == 1) {
         resetButtons();
         player.nextVideo();
-        resetLikesAndSkips();
       }
     });
 
     fb.child('skipCounter').on('value', function(snapshot) {
-      console.log(snapshot.val());
       if(snapshot.val() >= numSkipVotesRequired) {
         skipCounterOld = 0;
         player.nextVideo();
@@ -189,7 +186,7 @@ block scripts
     function resetLikesAndSkips() {
       likeSelected = 0;
       skipSelected = 0;
-      fb.set({
+      fb.udpate({
         skipCounter: 0,
         likeCounter: 0
       });

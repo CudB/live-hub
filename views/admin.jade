@@ -35,11 +35,11 @@ block scripts
     var pauseVideo = $('#pauseVideoBtn');
 
     startVideos.click(function() {
-      fb.set({
+      fb.update({
         startVideos: 1
       });
       setTimeout(function() {
-        fb.set({
+        fb.update({
           startVideos: 0
         });
       }, 1000);
@@ -47,11 +47,11 @@ block scripts
     }); 
 
     pauseVideo.click(function() {
-      fb.set({
+      fb.child('pauseVideo').update({
         pauseVideo: 1
       });
       setTimeout(function() {
-        fb.set({
+        fb.update({
           pauseVideo: 0
         });
       }, 1000);
@@ -59,24 +59,26 @@ block scripts
     }); 
 
     resetVideos.click(function() {
-      fb.child('skipCounter').remove();
-      fb.child('likeCounter').remove();
-      fb.set({
-        resetVideos: 1
+      fb.update({
+        resetVideos: 1,
+        likeCounter: 0,
+        skipCounter: 0
       });
       setTimeout(function() {
-        fb.set({
+        fb.update({
           resetVideos: 0
         });
       }, 1000);
     });
 
     skipVideo.click(function() {
-      fb.set({
-        skipVideo: 1
+      fb.update({
+        skipVideo: 1,
+        likeCounter: 0,
+        skipCounter: 0
       });
       setTimeout(function() {
-        fb.set({
+        fb.update({
           skipVideo: 0
         });
       }, 1000);
@@ -87,7 +89,7 @@ block scripts
     });
 
     resetVotes.click(function() {
-      fb.set({
+      fb.update({
         likeCounter: 0,
         skipCounter: 0
       });
