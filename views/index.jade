@@ -49,20 +49,33 @@ block scripts
           list: 'PLmCiWSd4T7aEeBtVH6tTYuO4r7M5IVRdq',
           loop: 1
         },
+        events: {
+          'onStateChange': onPlayerStateChange
+        }
       });
+    }
+
+    function onPlayerStateChange(event) {
+      if(event.data == YT.PlayerState.ENDED) {
+        resetButtons();
+        fb.child('skipCounter').transaction(function(currentValue) {
+          return 0;
+        });
+        fb.child('likeCounter').transaction(function(currentValue) {
+          return 0;
+        });
+      }
     }
 
     fb.child('startVideos').on('value', function(snapshot) {
       if(snapshot.val()) {
         player.playVideo();
-        resetButtons();
       }
     });
 
     fb.child('pauseVideo').on('value', function(snapshot) {
       if(snapshot.val()) {
         player.pauseVideo();
-        resetButtons();
       }
     });
 
@@ -89,7 +102,9 @@ block scripts
         fb.child('skipCounter').transaction(function(currentValue) {
           return 0;
         });
-        
+        fb.child('likeCounter').transaction(function(currentValue) {
+          return 0;
+        });
       }
       else if(skipCounterOld == numSkipVotesRequired - 1 && snapshot.val() == 0 && dontplay == 0) {
         skipCounterOld = 0;
@@ -108,7 +123,7 @@ block scripts
     })
     
     likeBtn.click(function() {
-      resetButtons();
+      skipBtn.attr('class', 'skipBtn');
       if(!likeSelected) {
         likeSelected = 1;
         incLike();
@@ -119,13 +134,14 @@ block scripts
         }
       }
       else {
+        likeBtn.attr('class', 'likeBtn');
         likeSelected = 0;
         decLike();
       }
     });
     
     skipBtn.click(function() {
-      resetButtons();
+      likeBtn.attr('class', 'likeBtn');
       if(!skipSelected) {
         $(this).attr('class', 'btnSelected');
         skipSelected = 1;
@@ -136,16 +152,17 @@ block scripts
         }
       }
       else {
+        skipBtn.attr('class', 'skipBtn');
         skipSelected = 0;
         decSkip();
       }
     });
 
     function resetButtons() {
-      likeBtn.prop('disabled', false);
       likeBtn.attr('class', 'likeBtn');
-      skipBtn.prop('disabled', false);
       skipBtn.attr('class', 'skipBtn');
+      likeSelected = 0;
+      skipSelected = 0;
     }
 
     function incSkip() {
@@ -242,7 +259,7 @@ block scripts
       messageList.append(messageElement)
 
       //SCROLL TO BOTTOM OF MESSAGE LIST
-      messageList[0].scrollTop = messageList[0].scrollHeight;
+      $(".outputbox").animate({ scrollTop: $("#example-messages").height()});
     });
     
     
