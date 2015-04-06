@@ -4,10 +4,10 @@ block content
   .videocontainer
     div(id="player") 
     .votebuttons
-      button(id="likeBtn", class="likeBtn") YAE
-      button(id="skipBtn", class="skipBtn") NAE
-    .skipCounter
+      button(id="likeBtn", class="likeBtn") Sweet
+      button(id="skipBtn", class="skipBtn") Skip
     .likeCounter
+    .skipCounter
 
 block sidebar
   .outputwidget
@@ -52,17 +52,17 @@ block scripts
     }
 
     fb.child('startVideos').on('value', function(snapshot) {
-      resetButtons();
       if(snapshot.val() == 1) {
         player.playVideo();
       }
+      resetButtons();
     });
 
     fb.child('pauseVideo').on('value', function(snapshot) {
-      resetButtons();
       if(snapshot.val() == 1) {
         player.pauseVideo();
       }
+      resetButtons();
     });
 
     fb.child('resetVideos').on('value', function(snapshot) {
@@ -173,13 +173,13 @@ block scripts
 
     function updateLikeCounter(ss) {
       if(ss == 0) {
-        $('.likeCounter').text("No users are jamming out");
+        $('.likeCounter').text("No users think this is sweet");
       }
       else if(ss == 1) {
-        $('.likeCounter').text(ss||0).append(" user is jamming out");
+        $('.likeCounter').text(ss||0).append(" user think this is sweet");
       }
       else if(ss > 1) {
-        $('.likeCounter').text(ss||0).append(" users are jamming out");
+        $('.likeCounter').text(ss||0).append(" users think this is sweet");
       }
     }
 
