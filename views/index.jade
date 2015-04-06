@@ -27,10 +27,11 @@ block scripts
 
     var likeBtn = $('#likeBtn');
     var skipBtn = $('#skipBtn');
-    var numSkipVotesRequired = 2;
+    var numSkipVotesRequired = 3;
 
     var skipSelected = 0;
-    var skipCounterOld = $('#skipCounter');
+    var skipCounterOld = 0;
+    var dontplay = 0;
 
     tag.src = "https://www.youtube.com/iframe_api";
     var firstScriptTag = document.getElementsByTagName('script')[0];
@@ -44,8 +45,8 @@ block scripts
         playerVars: {
           listType: 'playlist',
           list: 'PLFgquLnL59alZ5m7XEk44TI-FTrfNwL2B',
-          controls: 0,
-          showinfo: 0
+          //- controls: 0,
+          //- showinfo: 0
         },
       });
     }
@@ -60,17 +61,24 @@ block scripts
     fb.child('skipCounter').on('value', function(snapshot) {
       console.log(snapshot.val());
       if(snapshot.val() >= numSkipVotesRequired) {
+        skipCounterOld = 0;
         player.nextVideo();
+        resetButtons();
+        dontplay = 1;
         fb.child('skipCounter').transaction(function(currentValue) {
           return 0;
-        });   
-        resetButtons();
+        });
+        
       }
-      if(skipCounterOld > 0 && snapshot.val() == 0) {
+      else if(skipCounterOld == numSkipVotesRequired - 1 && snapshot.val() == 0 && dontplay == 0) {
+        skipCounterOld = 0;
         player.nextVideo();
         resetButtons();
       }
-      skipCounterOld = snapshot.val();
+      else {
+        dontplay = 0;
+        skipCounterOld = snapshot.val();
+      }
       updateSkipCountRequired(snapshot.val());
     });
     
