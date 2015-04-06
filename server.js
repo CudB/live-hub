@@ -21,6 +21,12 @@ app.get('/', function (req, res) {
   )
 })
 
+app.get('/admin', function (req, res) {
+  res.render('admin',
+  { title : 'Admin' }
+  )
+})
+
 app.listen(port, function() {
     console.log('Our app is running on http://localhost:' + port);
 });

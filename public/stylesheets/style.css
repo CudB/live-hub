@@ -134,6 +134,7 @@ header {
 .main-content p {
   margin-bottom: 20px;
 }
+
 .sidebar {
   float: left;
   width: 280px;
@@ -203,7 +204,7 @@ footer {
   width: 97%;
 }
 .votebuttons {
-  float: right;
+  float: left;
 }
   
 .likeBtn {
@@ -211,10 +212,10 @@ footer {
   border-radius: 10px;
   border: 0;
   font-family: Quicksand;
-  font-weight: bold;
   color: #ffffff;
   font-size: 20px;
   padding: 10px 20px 10px 20px;
+  margin-right: 3px;
 }
 
 .skipBtn {
@@ -226,6 +227,14 @@ footer {
   color: #ffffff;
   font-size: 20px;
   padding: 10px 20px 10px 20px;
+  margin-right: 3px;
+}
+
+.skipCounter {
+  float: right;
+  font-family: Quicksand;
+  font-size: 20px;
+  padding: 10px 20px 10px 20px;
 }
 
 .btnSelected {
@@ -233,10 +242,25 @@ footer {
   border-radius: 10px;
   border: 0;
   font-family: Quicksand;
-  font-weight: bold;
   color: #ffffff;
   font-size: 20px;
   padding: 10px 20px 10px 20px;
+  margin-right: 3px;
+}
+
+.adminButtons {
+  background: #fa5b4d;
+  border-radius: 10px;
+  border: 0;
+  font-family: Quicksand;
+  color: #ffffff;
+  font-size: 20px;
+  padding: 10px 20px 10px 20px;
+  margin: 5px;
+}
+
+.adminPageHeader h1{
+  font-size: 20px;
 }
 
 /*

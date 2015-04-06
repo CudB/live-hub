@@ -1,28 +1,36 @@
 extend layout
 
 block content
-  //- iframe(src="https://www-cdn.jtvnw.net/swflibs/TwitchPlayer.rd6a0d073735dbb05d88bcf4fd798b5e148f4e8f9.swf?channel=riotgame", frameborder="0", scrolling="no", height="378", width="620")
-  div(id="player")
-  //- iframe(width="560", height="315", src="https://www.youtube.com/embed/videoseries?list=PLFgquLnL59alZ5m7XEk44TI-FTrfNwL2B", frameborder="0", allowfullscreen)
-  //- .votebuttons
-  p 
-    button(id="likeBtn", class="likeBtn") LIKE
-    button(id="skipBtn", class="skipBtn") VOTE TO SKIP
+  .videocontainer
+    div(id="player") 
+    .votebuttons
+      button(id="likeBtn", class="likeBtn") LIKE
+      button(id="skipBtn", class="skipBtn") VOTE TO SKIP
+    .skipCounter
+
 block sidebar
   .outputwidget
     .outputbox
       ul(id = "messages")
   .inputwidget  
     .inputbox
-      input.formcontrol(type = "text", id= "nameInput", placeholder = "Name", maxlength = 20)
+      input.formcontrol(type = "text", id= "nameInput", placeholder = "Nickname", maxlength = 20)
       input.formcontrol(type = "text", id= "messageInput" placeholder = "Message", maxlength = 50)
 
 block scripts
   script(src='https://cdn.firebase.com/js/client/2.2.1/firebase.js')
   script(src='https://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js')
-  script(src='https://apis.google.com/js/client.js?onload=function')
   script.
+    var fb = new Firebase('https://flickering-inferno-2389.firebaseio.com/');
+
     var tag = document.createElement('script');
+
+    var likeBtn = $('#likeBtn');
+    var skipBtn = $('#skipBtn');
+    var numSkipVotesRequired = 2;
+
+    var skipSelected = 0;
+    var skipCounterOld = $('#skipCounter');
 
     tag.src = "https://www.youtube.com/iframe_api";
     var firstScriptTag = document.getElementsByTagName('script')[0];
@@ -39,26 +47,77 @@ block scripts
           controls: 0,
           showinfo: 0
         },
-        events: {
-          //- 'onReady': onPlayerReady,
-          //- 'onStateChange': onPlayerStateChange
-        }
       });
     }
 
-    function onPlayerReady(event) {
-        event.target.playVideo();
+    fb.child('startVideos').on('value', function(snapshot) {
+      if(snapshot.val() == 1) {
+        player.playVideo();
+        resetButtons;
+      }
+    });
+
+    fb.child('skipCounter').on('value', function(snapshot) {
+      console.log(snapshot.val());
+      if(snapshot.val() >= numSkipVotesRequired) {
+        player.nextVideo();
+        fb.child('skipCounter').transaction(function(currentValue) {
+          return 0;
+        });   
+        resetButtons();
+      }
+      if(skipCounterOld > 1 && snapshot.val() == 0) {
+        player.nextVideo();
+        resetButtons();
+      }
+      skipCounterOld = snapshot.val();
+      updateSkipCountRequired(snapshot.val());
+    });
+    
+    likeBtn.click(function() {
+      if(skipSelected) {
+        decSkip();
+      }
+      resetButtons();
+      $(this).prop('disabled', true);
+      $(this).attr('class', 'btnSelected');
+    });
+    
+    skipBtn.click(function() {
+      resetButtons();
+      $(this).prop('disabled', true);
+      $(this).attr('class', 'btnSelected');
+      skipSelected = 1;
+      incSkip();
+    });
+
+    function resetButtons() {
+      likeBtn.prop('disabled', false);
+      likeBtn.attr('class', 'likeBtn');
+      skipBtn.prop('disabled', false);
+      skipBtn.attr('class', 'skipBtn');
+      skipSelected = 0;
     }
 
-    var done = false;
-    function onPlayerStateChange(event) {
-      if (event.data == YT.PlayerState.PLAYING && !done) {
-        setTimeout(stopVideo, 6000);
-        done = true;
-      }
+    function incSkip() {
+      // increment the counter
+      fb.child('skipCounter').transaction(function(currentValue) {
+          return (currentValue||0) + 1
+      });
     }
-    function stopVideo() {
-      player.stopVideo();
+
+    function decSkip() {
+      // increment the counter
+      fb.child('skipCounter').transaction(function(currentValue) {
+          return (currentValue||0) - 1
+      });
+    }
+
+    function updateSkipCountRequired(ss) {
+      if(ss != numSkipVotesRequired) {
+        var counter = numSkipVotesRequired - ss;
+        $('.skipCounter').text(counter||0).append(" votes required to skip");
+      }
     }
 
   script.
@@ -67,24 +126,6 @@ block scripts
     var messageField = $('#messageInput');
     var nameField = $('#nameInput');
     var messageList = $('#messages');
-
-    var skipSelected = 0;
-    var skipCounterOld;
-
-    fb.child('skipCounter').on("value", function(snapshot) {
-      console.log(snapshot.val());
-      if(snapshot.val() >= 2) {
-        fb.child('skipCounter').transaction(function(currentValue) {
-          return 0;
-        });   
-        resetButtons();
-      }
-      if(skipCounterOld > 0 && snapshot.val() == 0) {
-        player.nextVideo();
-        resetButtons();
-      }
-      skipCounterOld = snapshot.val();
-    });
 
     messageField.keypress(function (e) {
       if (e.keyCode == 13) {
@@ -118,48 +159,4 @@ block scripts
       messageList.scrollTop(messageList[0].scrollHeight);
     });
     
-    var likeBtn = $('#likeBtn');
-    var skipBtn = $('#skipBtn');
     
-    likeBtn.click(function() {
-        $(this).prop('disabled', true);
-        $(this).attr('class', 'btnSelected');
-        skipBtn.prop('disabled', false);
-        skipBtn.attr('class', 'skipBtn');
-        if(skipSelected) {
-          decSkip();
-          skipSelected = 0;
-        }
-        
-    });
-    
-    skipBtn.click(function() {
-        $(this).prop('disabled', true);
-        $(this).attr('class', 'btnSelected');
-        likeBtn.prop('disabled', false);
-        likeBtn.attr('class', 'likeBtn');
-        incSkip();
-        skipSelected = 1;
-    });
-
-    function resetButtons() {
-      likeBtn.prop('disabled', false);
-      likeBtn.attr('class', 'likeBtn');
-      skipBtn.prop('disabled', false);
-      skipBtn.attr('class', 'skipBtn');
-      skipSelected = 0;
-    }
-
-    function incSkip() {
-      // increment the counter
-      fb.child('skipCounter').transaction(function(currentValue) {
-          return (currentValue||0) + 1
-      });
-    }
-
-    function decSkip() {
-      // increment the counter
-      fb.child('skipCounter').transaction(function(currentValue) {
-          return (currentValue||0) - 1
-      });
-    }
