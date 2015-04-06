@@ -7,9 +7,17 @@ block content
   .div
     button.adminButtons(id="startVideosBtn") Start Videos
   .div
-    button.adminButtons(id="resetMessagesBtn") Reset Messages
+    button.adminButtons(id="pauseVideoBtn") Pause Video
+  .div
+    button.adminButtons(id="skipVideoBtn") Skip Video
+  .div
+    button.adminButtons(id="resetVideosBtn") Reset Videos
+
   .div
     button.adminButtons(id="resetSkipVotesBtn") Reset Skip Votes
+  .div
+    button.adminButtons(id="resetMessagesBtn") Reset Messages
+
 
 block sidebar
 
@@ -20,8 +28,11 @@ block scripts
     var fb = new Firebase('https://flickering-inferno-2389.firebaseio.com/');
 
     var resetMessages = $('#resetMessagesBtn');
+    var resetVideos = $('#resetVideosBtn');
     var resetSkipVotes = $('#resetSkipVotesBtn');
     var startVideos = $('#startVideosBtn');
+    var skipVideo = $('#skipVideoBtn');
+    var pauseVideo = $('#pauseVideoBtn');
 
     startVideos.click(function() {
       fb.set({
@@ -31,8 +42,43 @@ block scripts
         fb.set({
           startVideos: 0
         });
-      }, 2000);
+      }, 1000);
       
+    }); 
+
+    pauseVideo.click(function() {
+      fb.set({
+        pauseVideo: 1
+      });
+      setTimeout(function() {
+        fb.set({
+          pauseVideo: 0
+        });
+      }, 1000);
+      
+    }); 
+
+    resetVideos.click(function() {
+      fb.child('skipCounter').remove();
+      fb.set({
+        resetVideos: 1
+      });
+      setTimeout(function() {
+        fb.set({
+          resetVideos: 0
+        });
+      }, 1000);
+    });
+
+    skipVideo.click(function() {
+      fb.set({
+        skipVideo: 1
+      });
+      setTimeout(function() {
+        fb.set({
+          skipVideo: 0
+        });
+      }, 1000);
     });
 
     resetMessages.click(function() {

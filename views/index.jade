@@ -54,7 +54,27 @@ block scripts
     fb.child('startVideos').on('value', function(snapshot) {
       if(snapshot.val() == 1) {
         player.playVideo();
-        resetButtons;
+      }
+    });
+
+    fb.child('pauseVideo').on('value', function(snapshot) {
+      if(snapshot.val() == 1) {
+        player.pauseVideo();
+      }
+    });
+
+    fb.child('resetVideos').on('value', function(snapshot) {
+      if(snapshot.val() == 1) {
+        resetButtons();
+        player.playVideoAt(0);
+        player.pauseVideo();
+      }
+    });
+
+    fb.child('skipVideo').on('value', function(snapshot) {
+      if(snapshot.val() == 1) {
+        resetButtons();
+        player.nextVideo();
       }
     });
 
